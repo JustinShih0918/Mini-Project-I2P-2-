@@ -19,7 +19,7 @@ void initTable(void) {
 }
 
 int getval(char *str) {
-    int i = 0; 
+    int i = 0;
 
     for (i = 0; i < sbcount; i++)
         if (strcmp(str, table[i].name) == 0)
@@ -70,6 +70,7 @@ void freeTree(BTNode *root) {
         free(root);
     }
 }
+
 // factor := INT | ADDSUB INT |
 //		   	 ID  | ADDSUB ID  | 
 //		   	 ID ASSIGN expr |
@@ -164,6 +165,31 @@ BTNode *expr_tail(BTNode *left) {
         return expr_tail(node);
     } else {
         return left;
+    }
+}
+
+// statement := ENDFILE | END | expr END
+void statement(void) {
+    BTNode *retp = NULL;
+
+    if (match(ENDFILE)) {
+        exit(0);
+    } else if (match(END)) {
+        printf(">> ");
+        advance();
+    } else {
+        retp = expr();
+        if (match(END)) {
+            printf("%d\n", evaluateTree(retp));
+            printf("Prefix traversal: ");
+            printPrefix(retp);
+            printf("\n");
+            freeTree(retp);
+            printf(">> ");
+            advance();
+        } else {
+            error(SYNTAXERR);
+        }
     }
 }
 

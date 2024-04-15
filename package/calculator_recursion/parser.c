@@ -105,15 +105,15 @@ BTNode *assign_expr(void){
         advance();
         if(match(ASSIGN)){
             rept = makeNode(ASSIGN,getLexeme());
+            advance();
             rept->left = left;
             rept->right = assign_expr();
-            advance();
         }
         else if(match(ADDSUB_ASSIGN)){
             rept = makeNode(ADDSUB_ASSIGN,getLexeme());
+            advance();
             rept->left = left;
             rept->right = assign_expr();
-            advance();
         }
     }
     else rept = or_expr();
@@ -135,9 +135,9 @@ BTNode *or_expr_tail(BTNode *left){
     BTNode *node = NULL;
     if(match(OR)){
         node = makeNode(OR,getLexeme());
+        advance();
         node->left = left;
         node->right = xor_expr();
-        advance();
         return or_expr_tail(left);
     }
     else return left;
@@ -154,9 +154,9 @@ BTNode *xor_expr_tail(BTNode *left){
     BTNode *node = NULL;
     if(match(XOR)){
         node = makeNode(XOR,getLexeme());
+        advance();
         node->left = left;
         node->right = and_expr();
-        advance();
         return xor_expr_tail(node);
     }
     else return left;
@@ -173,9 +173,9 @@ BTNode *and_expr_tail(BTNode *left){
     BTNode *node = NULL;
     if(match(AND)){
         node = makeNode(AND,getLexeme());
+        advance();
         node->left = left;
         node->right = addsub_expr();
-        advance();
         return and_expr_tail(node);
     }
     else return left;
@@ -192,12 +192,12 @@ BTNode *addsub_expr_tail(BTNode *left){
     BTNode *node = NULL;
     if(match(ADDSUB)){
         node = makeNode(ADDSUB,getLexeme());
+        advance();
         node->left = left;
         node->right = muldiv_expr();
-        advance();
         return addsub_expr_tail(node);
     }
-    else return node;
+    else return left;
 }
 
 // muldiv_expr := unary_expr muldiv_expr_tail 
@@ -216,21 +216,22 @@ BTNode *muldiv_expr_tail(BTNode *left){
         advance();
         return muldiv_expr_tail(node);
     }
-    else return node;
+    else return left;
 }
 
 // unary_expr := ADDSUB unary_expr | factor 
 BTNode *unary_expr(void){
     BTNode *rept = NULL;
-    rept->left = makeNode(INT,"0");
     if(match(ADDSUB)){
+        rept->left = makeNode(INT,"0");
         rept = makeNode(ADDSUB,getLexeme());
-        rept->right = unary_expr();
         advance();
+        rept->right = unary_expr();
     }
     else{
         rept = factor();
     }
+
     return rept;
 }
 
@@ -241,7 +242,7 @@ BTNode *factor(void){
 
     if(match(INT)){
         rept = makeNode(INT,getLexeme());
-        advanvce();
+        advance();
     }
     else if(match(ID)){
         rept = makeNode(ID,getLexeme());

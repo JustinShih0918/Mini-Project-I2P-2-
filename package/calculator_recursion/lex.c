@@ -17,7 +17,6 @@ TokenSet getToken(void)
     if (isdigit(c)) {
         lexeme[0] = c;
         c = fgetc(stdin);
-        if(c == '_' || isalpha(c)) return UNKNOWN;
         i = 1;
         while (isdigit(c) && i < MAXLEN) {
             lexeme[i] = c;
