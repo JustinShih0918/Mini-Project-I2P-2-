@@ -4,15 +4,16 @@
 #define MAXLEN 256
 
 // Token types
+
 typedef enum {
     UNKNOWN, END, ENDFILE, 
-    INT, ID,
-    ADDSUB, MULDIV,
-    ASSIGN, 
-    LPAREN, RPAREN,
-    INCDEC,
-    AND, OR, XOR,
-    ADDSUB_ASSIGN
+    INT, ID,// int , variable
+    ADDSUB, MULDIV, // + or -, * or /
+    ASSIGN, // =
+    LPAREN, RPAREN, // (,)
+    INCDEC, // ++ or --
+    AND, OR, XOR, // &, |, ^
+    ADDSUB_ASSIGN // += or -=
 } TokenSet;
 // things that missing: INCDEC(f), AND(f), OR(f), XOR(f), ADDSUB_ASSIGN(f)
 

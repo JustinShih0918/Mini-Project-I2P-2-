@@ -14,7 +14,7 @@ TokenSet getToken(void)
 
     while ((c = fgetc(stdin)) == ' ' || c == '\t');
 
-    if (isdigit(c)) {
+    if (isdigit(c)) { //INT
         lexeme[0] = c;
         c = fgetc(stdin);
         i = 1;
@@ -25,67 +25,86 @@ TokenSet getToken(void)
         }
         ungetc(c, stdin);
         lexeme[i] = '\0';
-        return INT;
-    } else if (c == '+' || c == '-') {
-        lexeme[0] = c;
-        if((c = fgetc(stdin)) == ' '|| c == '\t'){
-            ungetc(c,stdin);
-            lexeme[1] = '\0';
-            return ADDSUB;
+        for(int j = 0;j<i;j++){
+            printf("%c",lexeme[j]);
         }
-        else if(c == lexeme[0]){
+        printf("\n");
+        return INT;
+    } else if (c == '+' || c == '-') { //ADDSUB, INCDEC, ADDSUB_ASSIGN
+        lexeme[0] = c;
+        c = fgetc(stdin);
+        if(c == lexeme[0]){ //INCDEC
             lexeme[1] = c;
             lexeme[2] = '\0';
+            printf("%c%c\n",lexeme[0],lexeme[1]);
             return INCDEC;
         }
-        else if(c == '='){
+        else if(c == '='){ //ADDSUN_ASSIGN
             lexeme[1] = c;
             lexeme[2] = '\0';
+            printf("%c%c\n",lexeme[0],lexeme[1]);
             return ADDSUB_ASSIGN;
         }
-    } else if (c == '*' || c == '/') {
+        else{
+            ungetc(c,stdin); // ADDSUB
+            lexeme[1] = '\0';
+            printf("%c\n",lexeme[0]);
+            return ADDSUB;
+        }
+    } else if (c == '*' || c == '/') { // MULDIV
         lexeme[0] = c;
         lexeme[1] = '\0';
+        printf("%c\n",lexeme[0]);
         return MULDIV;
-    } else if (c == '\n') {
+    } else if (c == '\n') { //end
         lexeme[0] = '\0';
         return END;
-    } else if (c == '=') {
+    } else if (c == '=') { // assign
         strcpy(lexeme, "=");
+        printf("%c\n",lexeme[0]);
         return ASSIGN;
-    } else if (c == '(') {
+    } else if (c == '(') { //Lparen
         strcpy(lexeme, "(");
+        printf("%c\n",lexeme[0]);
         return LPAREN;
-    } else if (c == ')') {
+    } else if (c == ')') { // Rparen
         strcpy(lexeme, ")");
+        printf("%c\n",lexeme[0]);
         return RPAREN;
-    } else if (isalpha(c) || c == '_') {
+    } else if (isalpha(c) || c == '_') { // ID
         lexeme[0] = c;
         c = fgetc(stdin);
         i = 1;
-        while (c != '\t' && c != EOF && c !='\n')
+        while (c != '\t' && c != EOF && c !='\n' && c != ' ' && c != '+' && c !='-' && c != '&' && c !='|' && c !='*'&& c !='^' && c !='/')
         {
             lexeme[i] = c;
             i++;
             c = fgetc(stdin);
         }
         ungetc(c,stdin);
+        for(int j = 0;j<i;j++){
+            printf("%c",lexeme[j]);
+        }
+        printf("\n");
         lexeme[i] = '\0';
         return ID;
-    } else if(c == '&'){
+    } else if(c == '&'){ // and
         lexeme[0] = c;
         lexeme[1] = '\0';
+        printf("%c\n",lexeme[0]);
         return AND;
-    } else if(c == '|'){
+    } else if(c == '|'){ // or
         lexeme[0] = c;
         lexeme[1] = '\0';
+        printf("%c\n",lexeme[0]);
         return OR;
-    } else if(c == '^'){
+    } else if(c == '^'){ // xor
         lexeme[0] = c;
         lexeme[1] = '\0';
+        printf("%c\n",lexeme[0]);
         return XOR;
     }
-    else if (c == EOF) {
+    else if (c == EOF) { // end of file
         return ENDFILE;
     } else {
         return UNKNOWN;
