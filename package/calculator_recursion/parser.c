@@ -71,7 +71,12 @@ void freeTree(BTNode *root) {
     }
 }
 
-// statement := END FILE | END | assign_expr END
+
+void drawBack(char* arr){
+    int len = (int)strlen(arr);
+    for(int i = 0;i<len;i++) ungetc(arr[i],stdin);  
+}
+// statement := ENDFILE | END | assign_expr END
 void statement(void){
     BTNode *retp = NULL;
     if(match(ENDFILE)) exit(0);
@@ -101,7 +106,10 @@ BTNode *assign_expr(void){
     BTNode *rept = NULL;
     BTNode *left = NULL;
     if(match(ID)){
-        left = makeNode(ID,getLexeme());
+        char id_name[MAXLEN];
+        strcpy(id_name,getLexeme());
+        printf("ths id_name: %s\n",id_name);
+        left = makeNode(ID,id_name);
         advance();
         if(match(ASSIGN)){
             rept = makeNode(ASSIGN,getLexeme());
@@ -115,6 +123,12 @@ BTNode *assign_expr(void){
             rept->left = left;
             rept->right = assign_expr();
         }
+        else{
+            drawBack(getLexeme());
+            drawBack(id_name);
+            advance();
+            rept = or_expr();
+        }
     }
     else rept = or_expr();
 
@@ -123,11 +137,8 @@ BTNode *assign_expr(void){
 
 // or_expr := xor_expr or_expr_tail 
 BTNode *or_expr(void){
-    BTNode *rept = NULL;
-
-    rept->left = xor_expr();
-    rept = or_expr_tail(rept->left);
-    return rept;
+    BTNode *rept = xor_expr();
+    return or_expr_tail(rept);
 }
 
 // or_expr_tail := OR xor_expr or_expr_tail | NiL 
@@ -211,9 +222,9 @@ BTNode *muldiv_expr_tail(BTNode *left){
     BTNode *node = NULL;
     if(match(MULDIV)){
         node = makeNode(MULDIV,getLexeme());
+        advance();
         node->left = left;
         node->right = unary_expr();
-        advance();
         return muldiv_expr_tail(node);
     }
     else return left;
@@ -228,9 +239,8 @@ BTNode *unary_expr(void){
         advance();
         rept->right = unary_expr();
     }
-    else{
-        rept = factor();
-    }
+    else rept = factor();
+    
 
     return rept;
 }
@@ -246,16 +256,19 @@ BTNode *factor(void){
     }
     else if(match(ID)){
         rept = makeNode(ID,getLexeme());
+        printf("make ID:%s\n",rept->lexeme);
         advance();
     }
     else if(match(INCDEC)){
-        left = makeNode(INCDEC,getLexeme());
+        rept = makeNode(INCDEC,getLexeme());
         advance();
         if(match(ID)){
-            rept = makeNode(ID,getLexeme());
-            rept->left = left;
+            left = makeNode(ID,getLexeme());
             advance();
+            rept->left = left;
+            rept->right = makeNode(ID,"1");
         }
+        else err(UNDEFINED); 
     }
     else if(match(LPAREN)){
         advance();
