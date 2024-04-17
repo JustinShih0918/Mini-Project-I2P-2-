@@ -102,7 +102,7 @@ BTNode *assign_expr(void){
     BTNode *left = or_expr();
 
     if(match(ASSIGN) || match(ADDSUB_ASSIGN)){
-        if(left->data != ID) err(SYNTAXERR);
+        if(left->data != ID){error(SYNTAXERR);}
         else{
             if(match(ASSIGN)){
                 rept = makeNode(ASSIGN,getLexeme());
@@ -116,6 +116,7 @@ BTNode *assign_expr(void){
                 rept->left = left;
                 rept->right = assign_expr();
             }
+            else error(SYNTAXERR);
         }
     }
     else rept = left;
@@ -134,7 +135,6 @@ BTNode *or_expr_tail(BTNode *left){
     BTNode *node = NULL;
     if(match(OR)){
         node = makeNode(OR,getLexeme());
-        printf("in or expr tail: %s\n",node->lexeme);
         advance();
         node->left = left;
         node->right = xor_expr();
@@ -256,13 +256,13 @@ BTNode *factor(void){
             rept->left = left;
             rept->right = makeNode(ID,"1");
         }
-        else err(UNDEFINED); 
+        else err(SYNTAXERR); 
     }
     else if(match(LPAREN)){
         advance();
         rept = assign_expr();
         if(match(RPAREN)) advance();
-        else err(MISPAREN);
+        else error(MISPAREN);
     }
 
     return rept;
