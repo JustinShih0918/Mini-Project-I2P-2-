@@ -71,11 +71,6 @@ void freeTree(BTNode *root) {
     }
 }
 
-
-void drawBack(char* arr){
-    int len = (int)strlen(arr);
-    for(int i = 0;i<len;i++) ungetc(arr[i],stdin);  
-}
 // statement := ENDFILE | END | assign_expr END
 void statement(void){
     BTNode *retp = NULL;
@@ -104,33 +99,26 @@ void statement(void){
 // assign_expr := ID ASSIGN assign_expr | ID ADDSUB_ASSIGN assign_expr | or_expr 
 BTNode *assign_expr(void){
     BTNode *rept = NULL;
-    BTNode *left = NULL;
-    if(match(ID)){
-        char id_name[MAXLEN];
-        strcpy(id_name,getLexeme());
-        printf("ths id_name: %s\n",id_name);
-        left = makeNode(ID,id_name);
-        advance();
-        if(match(ASSIGN)){
-            rept = makeNode(ASSIGN,getLexeme());
-            advance();
-            rept->left = left;
-            rept->right = assign_expr();
-        }
-        else if(match(ADDSUB_ASSIGN)){
-            rept = makeNode(ADDSUB_ASSIGN,getLexeme());
-            advance();
-            rept->left = left;
-            rept->right = assign_expr();
-        }
+    BTNode *left = or_expr();
+
+    if(match(ASSIGN) || match(ADDSUB_ASSIGN)){
+        if(left->data != ID) err(SYNTAXERR);
         else{
-            drawBack(getLexeme());
-            drawBack(id_name);
-            advance();
-            rept = or_expr();
+            if(match(ASSIGN)){
+                rept = makeNode(ASSIGN,getLexeme());
+                advance();
+                rept->left = left;
+                rept->right = assign_expr();
+            }
+            else if(match(ADDSUB_ASSIGN)){
+                rept = makeNode(ADDSUB_ASSIGN,getLexeme());
+                advance();
+                rept->left = left;
+                rept->right = assign_expr();
+            }
         }
     }
-    else rept = or_expr();
+    else rept = left;
 
     return rept;
 }
@@ -146,10 +134,11 @@ BTNode *or_expr_tail(BTNode *left){
     BTNode *node = NULL;
     if(match(OR)){
         node = makeNode(OR,getLexeme());
+        printf("in or expr tail: %s\n",node->lexeme);
         advance();
         node->left = left;
         node->right = xor_expr();
-        return or_expr_tail(left);
+        return or_expr_tail(node);
     }
     else return left;
 }
@@ -256,7 +245,6 @@ BTNode *factor(void){
     }
     else if(match(ID)){
         rept = makeNode(ID,getLexeme());
-        printf("make ID:%s\n",rept->lexeme);
         advance();
     }
     else if(match(INCDEC)){

@@ -75,7 +75,7 @@ TokenSet getToken(void)
         lexeme[0] = c;
         c = fgetc(stdin);
         i = 1;
-        while (c != '=' && c != '\t' && c != EOF && c !='\n' && c != ' ' && c != '+' && c !='-' && c != '&' && c !='|' && c !='*'&& c !='^' && c !='/' && c !='(' && c!=')')
+        while (isalpha(c) || c == '_')
         {
             lexeme[i] = c;
             i++;
