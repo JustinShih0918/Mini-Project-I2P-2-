@@ -4,7 +4,7 @@
 #include "parser.h"
 
 // Evaluate the syntax tree
-extern int evaluateTree(BTNode *root);
+extern int evaluateTree(BTNode *root,int reg_index);
 
 // Print the syntax tree in prefix
 extern void printPrefix(BTNode *root);

@@ -194,6 +194,7 @@ void statement(void) {
 }
 
 void err(ErrorType errorNum) {
+    printf("EXIT 1\n");
     if (PRINTERR) {
         fprintf(stderr, "error: ");
         switch (errorNum) {

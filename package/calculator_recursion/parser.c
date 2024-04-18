@@ -53,6 +53,15 @@ int setval(char *str, int val) {
     return val;
 }
 
+int getMemoryAddress(char *str){
+    for(int i = 0;i<sbcount;i++){
+        if(strcmp(str,table[i].name) == 0){
+            return i*4;
+        }
+    }
+    return -1;
+}
+
 BTNode *makeNode(TokenSet tok, const char *lexe) {
     BTNode *node = (BTNode*)malloc(sizeof(BTNode));
     strcpy(node->lexeme, lexe);
@@ -74,20 +83,27 @@ void freeTree(BTNode *root) {
 // statement := ENDFILE | END | assign_expr END
 void statement(void){
     BTNode *retp = NULL;
-    if(match(ENDFILE)) exit(0);
+    if(match(ENDFILE)){
+        printf("MOV r0 [4]\n");
+        printf("MOV r1 [4]\n");
+        printf("MOV r2 [8]\n");
+        printf("EXIT 0\n");
+        exit(0);
+    }
     else if(match(END)){
-        printf(">> ");
+        //printf(">> ");
         advance();
     }
     else{
         retp = assign_expr();
         if(match(END)){
-            printf("%d\n", evaluateTree(retp));
-            printf("Prefix traversal: ");
-            printPrefix(retp);
-            printf("\n");
+            evaluateTree(retp,0);
+            // printf("%d\n", evaluateTree(retp,0));
+            // printf("Prefix traversal: ");
+            // printPrefix(retp);
+            // printf("\n");
             freeTree(retp);
-            printf(">> ");
+            //printf(">> ");
             advance();
         }
         else{
@@ -266,4 +282,38 @@ BTNode *factor(void){
     }
 
     return rept;
+}
+
+void err(ErrorType errorNum) {
+    printf("EXIT 1\n");
+    if (PRINTERR) {
+        fprintf(stderr, "error: ");
+        switch (errorNum) {
+            case MISPAREN:
+                fprintf(stderr, "mismatched parenthesis\n");
+                break;
+            case NOTNUMID:
+                fprintf(stderr, "number or identifier expected\n");
+                break;
+            case NOTFOUND:
+                fprintf(stderr, "variable not defined\n");
+                break;
+            case RUNOUT:
+                fprintf(stderr, "out of memory\n");
+                break;
+            case NOTLVAL:
+                fprintf(stderr, "lvalue required as an operand\n");
+                break;
+            case DIVZERO:
+                fprintf(stderr, "divide by constant zero\n");
+                break;
+            case SYNTAXERR:
+                fprintf(stderr, "syntax error\n");
+                break;
+            default:
+                fprintf(stderr, "undefined error\n");
+                break;
+        }
+    }
+    exit(0);
 }
