@@ -144,7 +144,6 @@ TokenSet getToken(void)
     while ((c = fgetc(stdin)) == ' ' || c == '\t');
 
     if (isdigit(c)) { //INT
-
         lexeme[0] = c;
         c = fgetc(stdin);
         i = 1;
@@ -162,40 +161,33 @@ TokenSet getToken(void)
         if(c == lexeme[0]){ //INCDEC
             lexeme[1] = c;
             lexeme[2] = '\0';
-            //printf("%c%c\n",lexeme[0],lexeme[1]);
             return INCDEC;
         }
         else if(c == '='){ //ADDSUN_ASSIGN
             lexeme[1] = c;
             lexeme[2] = '\0';
-            //printf("%c%c\n",lexeme[0],lexeme[1]);
             return ADDSUB_ASSIGN;
         }
         else{
             ungetc(c,stdin); // ADDSUB
             lexeme[1] = '\0';
-            //printf("%c\n",lexeme[0]);
             return ADDSUB;
         }
     } else if (c == '*' || c == '/') { // MULDIV
         lexeme[0] = c;
         lexeme[1] = '\0';
-        //printf("%c\n",lexeme[0]);
         return MULDIV;
     } else if (c == '\n') { //end
         lexeme[0] = '\0';
         return END;
     } else if (c == '=') { // assign
         strcpy(lexeme, "=");
-        //printf("%c\n",lexeme[0]);
         return ASSIGN;
     } else if (c == '(') { //Lparen
         strcpy(lexeme, "(");
-        //printf("%c\n",lexeme[0]);
         return LPAREN;
     } else if (c == ')') { // Rparen
         strcpy(lexeme, ")");
-        //printf("%c\n",lexeme[0]);
         return RPAREN;
     } else if (isalpha(c) || c == '_') { // ID
         lexeme[0] = c;
@@ -208,26 +200,19 @@ TokenSet getToken(void)
             c = fgetc(stdin);
         }
         ungetc(c,stdin);
-        // for(int j = 0;j<i;j++){
-        //     printf("%c",lexeme[j]);
-        // }
-        // printf("\n");
         lexeme[i] = '\0';
         return ID;
     } else if(c == '&'){ // and
         lexeme[0] = c;
         lexeme[1] = '\0';
-        //printf("%c\n",lexeme[0]);
         return AND;
     } else if(c == '|'){ // or
         lexeme[0] = c;
         lexeme[1] = '\0';
-        //printf("%c\n",lexeme[0]);
         return OR;
     } else if(c == '^'){ // xor
         lexeme[0] = c;
         lexeme[1] = '\0';
-        //printf("%c\n",lexeme[0]);
         return XOR;
     }
     else if (c == EOF) { // end of file
@@ -337,19 +322,13 @@ void statement(void){
         exit(0);
     }
     else if(match(END)){
-        //printf(">> ");
         advance();
     }
     else{
         retp = assign_expr();
         if(match(END)){
             evaluateTree(retp,0);
-            // printf("%d\n", evaluateTree(retp,0));
-            // printf("Prefix traversal: ");
-            // printPrefix(retp);
-            // printf("\n");
             freeTree(retp);
-            //printf(">> ");
             advance();
         }
         else{
@@ -510,7 +489,7 @@ BTNode *factor(void){
         rept = makeNode(INCDEC,getLexeme());
         advance();
         if(match(ID)){
-            rept->left = makeNode(ID,getLexeme()); //different in 339
+            rept->left = makeNode(ID,getLexeme()); 
             advance();
         }
         else error(SYNTAXERR); 
@@ -568,7 +547,7 @@ codeGen implementation
 int hasVariable(BTNode* root){
     if(root == NULL) return 0;
     if(root->data == ID) return 1;
-    return (hasVariable(root->right)||hasVariable(root->right));
+    return (hasVariable(root->left)||hasVariable(root->right));
 }
 
 int evaluateTree(BTNode *root,int reg_index) {
@@ -677,7 +656,6 @@ void printPrefix(BTNode *root) {
 }
 
 int main() {
-    //freopen("input.txt", "w", stdout);
     initTable();
     while (1) {
         statement();

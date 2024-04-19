@@ -144,7 +144,6 @@ TokenSet getToken(void)
     while ((c = fgetc(stdin)) == ' ' || c == '\t');
 
     if (isdigit(c)) { //INT
-
         lexeme[0] = c;
         c = fgetc(stdin);
         i = 1;
@@ -468,7 +467,6 @@ BTNode *unary_expr(void){
         rept->left = makeNode(INT,"0");
         advance();
         rept->right = unary_expr();
-        return rept;
     }
     else rept = factor();
     
