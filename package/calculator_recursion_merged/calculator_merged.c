@@ -656,6 +656,7 @@ void printPrefix(BTNode *root) {
 }
 
 int main() {
+
     initTable();
     while (1) {
         statement();
